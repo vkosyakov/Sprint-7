@@ -13,7 +13,7 @@ import org.junit.runners.Parameterized;
 import static io.restassured.RestAssured.given;
 
 @RunWith(Parameterized.class)
-public class CreateOrderApiTest {
+public class CreateOrderApiTest extends Steps {
     Order order;
 
     public CreateOrderApiTest(Order order){
@@ -46,21 +46,11 @@ public class CreateOrderApiTest {
                 {orderWithNotColor},
         };
     }
-    @Step("Создание заказа")
-    public Response createOrd(){
-        Response response =
-                given()
-                        .header("Content-type", "application/json")
-                        .body(order)
-                        .post("/api/v1/orders");
-        return response;
-    }
+    @Before
+    public void setUp() {
+        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
 
-    @Step("Проверка кода после Post запроса /api/v1/orders")
-    public void checkCode(Response response){
-        response.then().statusCode(201);
     }
-
     @Step("Пoлучение body после POST запроса на api/v1/orders")
     public ResultCreateOrder getBody(){
         ResultCreateOrder resultCreateOrder =
@@ -72,29 +62,17 @@ public class CreateOrderApiTest {
         return resultCreateOrder;
     }
 
-    @Step("Перевод JSON в строку")
-    public void checkContainsTrack(ResultCreateOrder resultCreateOrder) {
-        Gson gson = new Gson();
-        String json = gson.toJson(resultCreateOrder);
-        Assert.assertThat(json,CoreMatchers.containsString("track"));
-    }
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
-
+    @Step("Создание заказа")
+    public Response createOrd(){
+        Response response =
+                given()
+                        .header("Content-type", "application/json")
+                        .body(order)
+                        .post("/api/v1/orders");
+        return response;
     }
 
     //Отмена заказа не работает
-    @Step("Отмена заказа")
-    public void cancelOrder(ResultCreateOrder resultCreateOrder){
-        given()
-                .header("Content-type", "application/json")
-                .body(resultCreateOrder)
-                .put("/api/v1/orders/cancel")
-                .then().statusCode(200);
-    }
-
 
     @DisplayName("Create order")
     @Description("Параметризованный тест создания заказа")

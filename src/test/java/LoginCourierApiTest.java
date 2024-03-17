@@ -8,29 +8,7 @@ import org.junit.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-public class LoginCourierApiTest {
-
-    @Step("Получение ответа в формате JSON после авторизации")
-    public ResultCreateCourierJSON getResponseLogin(Courier courier) {
-        ResultCreateCourierJSON resultCreateCourierJSON =
-                given()
-                        .header("Content-type", "application/json")
-                        .body(courier)
-                        .post("api/v1/courier/login")
-                        .body().as(ResultCreateCourierJSON.class);
-        return resultCreateCourierJSON;
-    }
-
-    @Step("Получение ответа после отправки запроса на авторизаию")
-    public Response requestPostLogin(Courier courier){
-        Response response =
-                given()
-                        .header("Content-type","application/json")
-                        .body(courier)
-                        .when()
-                        .post("api/v1/courier/login");
-        return  response;
-    }
+public class LoginCourierApiTest extends Steps {
 
     @Before
     public void setUp() {
